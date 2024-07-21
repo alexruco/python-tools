@@ -2,9 +2,6 @@ import json
 import os
 import re
 
-from files_handlers import get_project_root
-
-
 
 def store_role_data(role, data, project_root, filename):
     """Store role data into a JSON file."""
