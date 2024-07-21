@@ -8,7 +8,7 @@ from files_handlers import get_project_root
 from misc_handlers import log_error
 from web_handlers import encode_urls
 
-def store_conversation(conversation, hashtags, filename='conversations.json'):
+def store_conversation(conversation, hashtags, project_root, filename):
     """Store conversation into a JSON file organized by hashtags."""
     if not hashtags or not conversation:
         return
@@ -17,7 +17,7 @@ def store_conversation(conversation, hashtags, filename='conversations.json'):
     conversation['prompt'] = encode_urls(conversation['prompt'])
     conversation['response'] = encode_urls(conversation['response'])
 
-    project_root = get_project_root()
+    #project_root = get_project_root()
     print(f"Project root: {project_root}")  # Debugging: Print the project root
 
     filepath = os.path.join(project_root, filename)
