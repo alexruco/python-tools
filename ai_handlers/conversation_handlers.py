@@ -11,6 +11,7 @@ import argparse
 
 
 def store_conversation(conversation, hashtags, filename='conversations.json'):
+    """Store conversation into a JSON file organized by hashtags."""
     if not hashtags or not conversation:
         return
 
