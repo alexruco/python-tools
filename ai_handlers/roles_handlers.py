@@ -55,3 +55,40 @@ def set_standard_role(standard_role, filename='roles.json'):
     with open(filepath, 'w') as file:
         json.dump(roles, file, indent=4)
 
+def handle_standard_role(prompt):
+
+    standard_role_pattern = re.compile(r'\[standard_role:@(\w+)\]')
+    standard_role_match = standard_role_pattern.search(prompt)
+
+    if standard_role_match:
+        standard_role = standard_role_match.group(1)
+        set_standard_role(standard_role)
+        prompt = standard_role_pattern.sub('', prompt)
+    
+    return prompt
+
+def handle_roles(prompt):
+    role_pattern = re.compile(r'\[@(\w+):([^\]]*)\]')
+    roles = role_pattern.findall(prompt)
+    role_data = ""
+
+    for role, data in roles:
+        if data:
+            store_role_data(role, data)
+        fetched_role_data = fetch_role_data(role)
+        if not fetched_role_data:
+            store_role_data(role, "No specific data provided")  # Storing a placeholder if no data is provided
+            fetched_role_data = fetch_role_data(role)
+        role_data += "\n".join(fetched_role_data) + "\n"
+
+    simple_role_pattern = re.compile(r'\[@(\w+)\]')
+    simple_roles = simple_role_pattern.findall(prompt)
+
+    for role in simple_roles:
+        fetched_role_data = fetch_role_data(role)
+        if not fetched_role_data:
+            store_role_data(role, "No specific data provided")  # Storing a placeholder if no data is provided
+            fetched_role_data = fetch_role_data(role)
+        role_data += "\n".join(fetched_role_data) + "\n"
+    
+    return role_data

@@ -61,6 +61,19 @@ def fetch_conversations(hashtags, filename='conversations.json'):
     
     return conversations
 
+def handle_hashtags(prompt):
+    hashtag_pattern = re.compile(r'#(\w+)')
+    hashtags = hashtag_pattern.findall(prompt)
+    conversations = fetch_conversations(hashtags)
+    
+    # Convert each conversation to a string format
+    formatted_conversations = []
+    for convo in conversations:
+        formatted_conversations.append(f"Past question: {convo['prompt']}\nPast response: {convo['response']}")
+    
+    return hashtags, "\n".join(formatted_conversations)
+
+
 def remove_hashtags(text):
     """Remove hashtags from the text."""
     return re.sub(r'#\w+', '', text).strip()
