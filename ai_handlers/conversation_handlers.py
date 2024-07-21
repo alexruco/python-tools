@@ -44,7 +44,6 @@ def store_conversation(conversation, hashtags, project_root, filename):
         
 def fetch_conversations(hashtags, project_root, filename='conversations.json'):
     """Fetch conversations for given hashtags from a JSON file."""
-    project_root = get_project_root()
     filepath = os.path.join(project_root, filename)
 
     ensure_file_exists(filepath)
