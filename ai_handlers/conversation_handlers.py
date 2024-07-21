@@ -4,7 +4,6 @@ import json
 import os
 import re
 from files_handlers import ensure_file_exists
-from files_handlers import get_project_root
 from misc_handlers import log_error
 from web_handlers import encode_urls
 
