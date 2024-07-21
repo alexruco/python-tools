@@ -2,6 +2,7 @@
 
 import requests
 import json
+import argparse
 
 
 def generate_response(prompt, model_url="http://localhost:11434/api/generate", model_name="llama3"):
@@ -46,3 +47,9 @@ def parse_response(response_text):
             print(f"Line content: {line}")
 
     return full_response
+
+
+def parse_args(help, description):
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('prompt', type=str, help=help)
+    return parser.parse_args()
