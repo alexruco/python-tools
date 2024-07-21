@@ -1,8 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
-from general_handlers import log_error
+from misc_handlers import log_error
+import re
 
-
+def extract_urls(text):
+    """Extract all URLs from the given text."""
+    return re.findall(r'https?://\S+', text)
 
 def scrape_webpage(url):
     """Scrape the text content of a webpage."""
