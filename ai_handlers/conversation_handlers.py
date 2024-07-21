@@ -7,6 +7,8 @@ from files_handlers import ensure_file_exists
 from files_handlers import get_project_root
 from misc_handlers import log_error
 from web_handlers import encode_urls
+import argparse
+
 
 
 def store_conversation(conversation, hashtags, filename='conversations.json'):
@@ -73,6 +75,10 @@ def handle_hashtags(prompt):
     
     return hashtags, "\n".join(formatted_conversations)
 
+def parse_args(help, description):
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('prompt', type=str, help=help)
+    return parser.parse_args()
 
 def remove_hashtags(text):
     """Remove hashtags from the text."""
