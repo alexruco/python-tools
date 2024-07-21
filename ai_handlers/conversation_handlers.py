@@ -10,9 +10,7 @@ from web_handlers import encode_urls
 import argparse
 
 
-
 def store_conversation(conversation, hashtags, filename='conversations.json'):
-    """Store conversation into a JSON file organized by hashtags."""
     if not hashtags or not conversation:
         return
 
@@ -21,7 +19,10 @@ def store_conversation(conversation, hashtags, filename='conversations.json'):
     conversation['response'] = encode_urls(conversation['response'])
 
     project_root = get_project_root()
+    print(f"Project root: {project_root}")  # Debugging: Print the project root
+
     filepath = os.path.join(project_root, filename)
+    print(f"File path: {filepath}")  # Debugging: Print the full file path
 
     ensure_file_exists(filepath)
 
@@ -42,7 +43,7 @@ def store_conversation(conversation, hashtags, filename='conversations.json'):
 
     with open(filepath, 'w') as file:
         json.dump(data, file, indent=4)
-
+        
 def fetch_conversations(hashtags, filename='conversations.json'):
     """Fetch conversations for given hashtags from a JSON file."""
     project_root = get_project_root()
