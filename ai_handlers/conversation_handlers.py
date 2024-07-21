@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from files_handlers import ensure_file_exists
 from files_handlers import get_project_root
 from misc_handlers import log_error
@@ -57,3 +58,7 @@ def fetch_conversations(hashtags, filename='conversations.json'):
         conversations.extend(data.get(hashtag, []))
     
     return conversations
+
+def remove_hashtags(text):
+    """Remove hashtags from the text."""
+    return re.sub(r'#\w+', '', text).strip()
