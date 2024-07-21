@@ -42,7 +42,7 @@ def store_conversation(conversation, hashtags, project_root, filename):
     with open(filepath, 'w') as file:
         json.dump(data, file, indent=4)
         
-def fetch_conversations(hashtags, filename='conversations.json'):
+def fetch_conversations(hashtags, project_root, filename='conversations.json'):
     """Fetch conversations for given hashtags from a JSON file."""
     project_root = get_project_root()
     filepath = os.path.join(project_root, filename)
@@ -62,10 +62,10 @@ def fetch_conversations(hashtags, filename='conversations.json'):
     
     return conversations
 
-def handle_hashtags(prompt):
+def handle_hashtags(prompt, project_root):
     hashtag_pattern = re.compile(r'#(\w+)')
     hashtags = hashtag_pattern.findall(prompt)
-    conversations = fetch_conversations(hashtags)
+    conversations = fetch_conversations(hashtags, project_root)
     
     # Convert each conversation to a string format
     formatted_conversations = []
