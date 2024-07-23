@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from misc_handlers import log_error
 import re
 from urllib.parse import urlparse, urlunparse, urljoin
+import logging
 
 
 def extract_urls(text):
@@ -25,7 +26,6 @@ def scrape_webpage(url):
 def encode_urls(text):
     """Encode URLs in the text by replacing 'https://' with 'https_//'."""
     return text.replace('https://', 'https_//')
-
 
 def normalize_url(url, base_url=None, ignore_scheme=True):
     if base_url:
@@ -50,4 +50,22 @@ def get_http_status(url):
     except requests.RequestException as e:
         return str(e)
     
-    
+def is_content_page(url):
+    content_extensions = (
+        '.php', '.pdf', '.html', '.htm', '.asp', '.aspx', '.jsp', '.jspx',
+        '.cgi', '.pl', '.cfm', '.xml', '.json', '.md', '.txt'
+    )
+    media_extensions = (
+        '.jpg', '.jpeg', '.gif', '.webp', '.png', '.bmp', '.svg', '.ico',
+        '.tif', '.tiff', '.mp4', '.mkv', '.webm', '.mp3', '.wav', '.ogg',
+        '.avi', '.mov', '.wmv', '.flv', '.swf', '.m4a', '.m4v', '.aac',
+        '.3gp', '.3g2', '.midi', '.mid', '.wma', '.aac', '.ra', '.ram', 
+        '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.odt', 
+        '.ods', '.odp'
+    )
+    if any(url.lower().endswith(ext) for ext in content_extensions):
+        return True
+    if any(url.lower().endswith(ext) for ext in media_extensions):
+        return False
+    return True
+
