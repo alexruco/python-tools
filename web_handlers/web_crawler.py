@@ -2,9 +2,8 @@
 
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse, urlunparse
+from urllib.parse import urljoin, urlparse
 from misc_handlers import log_error
-from web_handlers import normalize_url, get_http_status, is_internal_url, is_content_page
 
 def parse_html(url):
     """
@@ -45,20 +44,11 @@ def crawl_website(root_url, crawl_depth=5, is_sitemap=False):
     Returns:
     tuple: Three lists of dictionaries containing the internal, external, and sitemap links, their status, and the URLs where they are found.
     """
+    from web_handlers import normalize_url, get_http_status, is_internal_url, is_content_page
+
     internal_links_data = {}
     external_links_data = {}
     sitemap_links_data = []
-
-    if is_sitemap:
-        links = parse_sitemap(root_url)
-        for link in links:
-            status = get_http_status(link)
-            sitemap_links_data.append({
-                'link': link,
-                'status': status,
-                'found_at': [root_url]
-            })
-        return [], [], sitemap_links_data
 
     visited_urls = set()
 
@@ -67,7 +57,11 @@ def crawl_website(root_url, crawl_depth=5, is_sitemap=False):
             return
         visited_urls.add(url)
 
-        links = parse_html(url)
+        if is_sitemap:
+            links = parse_sitemap(url)
+        else:
+            links = parse_html(url)
+
         for link in links:
             link_url = normalize_url(link, base_url=url, ignore_scheme=False)
             if is_internal_url(root_url, link_url) and is_content_page(link_url):
@@ -79,8 +73,9 @@ def crawl_website(root_url, crawl_depth=5, is_sitemap=False):
                         'found_at': []
                     }
                 internal_links_data[link_url]['found_at'].append(url)
-                crawl(link_url, current_depth + 1)
-            elif not is_internal_url(root_url, link_url):
+                if not is_sitemap:
+                    crawl(link_url, current_depth + 1)
+            elif not is_internal_url(root_url, link_url) and not is_sitemap:
                 status = get_http_status(link_url)
                 if link_url not in external_links_data:
                     external_links_data[link_url] = {
@@ -90,22 +85,17 @@ def crawl_website(root_url, crawl_depth=5, is_sitemap=False):
                     }
                 external_links_data[link_url]['found_at'].append(url)
 
+        if is_sitemap:
+            for link in links:
+                if link.endswith('.xml'):
+                    crawl(link, current_depth + 1)
+                else:
+                    status = get_http_status(link)
+                    sitemap_links_data.append({
+                        'link': link,
+                        'status': status,
+                        'found_at': [url]
+                    })
+
     crawl(root_url, 0)
     return list(internal_links_data.values()), list(external_links_data.values()), sitemap_links_data
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) != 4:
-        print("Usage: python web_crawler.py <root_url> <crawl_depth> <is_sitemap>")
-        sys.exit(1)
-
-    root_url = sys.argv[1]
-    crawl_depth = int(sys.argv[2])
-    is_sitemap = sys.argv[3].lower() == 'true'
-
-    internal_links, external_links, sitemap_links = crawl_website(root_url, crawl_depth, is_sitemap)
-
-    print(f"Internal Links:\n{internal_links}")
-    print(f"External Links:\n{external_links}")
-    print(f"Sitemap Links:\n{sitemap_links}")
